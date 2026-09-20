@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Icônes Freedi Chat</title>
+</head>
+<body style="font-family:sans-serif;padding:16px;max-width:420px;margin:auto">
+<h1 style="font-size:20px">Icônes Freedi Chat</h1>
+<p>Touchez chaque bouton pour enregistrer l'image.</p>
+<p><a id="a192" style="display:block;padding:14px;background:#F4B400;color:#17212B;text-align:center;border-radius:10px;text-decoration:none;font-weight:bold">Télécharger icon-192.png</a></p>
+<p><a id="a512" style="display:block;padding:14px;background:#F4B400;color:#17212B;text-align:center;border-radius:10px;text-decoration:none;font-weight:bold">Télécharger icon-512.png</a></p>
+<p><img id="prev" alt="Aperçu" width="160" height="160"></p>
+<script>
+function rr(x, l, t, w, h, r) {
+  x.beginPath();
+  x.moveTo(l + r, t);
+  x.arcTo(l + w, t, l + w, t + h, r);
+  x.arcTo(l + w, t + h, l, t + h, r);
+  x.arcTo(l, t + h, l, t, r);
+  x.arcTo(l, t, l + w, t, r);
+  x.closePath();
+}
+function draw(size) {
+  var c = document.createElement("canvas");
+  c.width = size; c.height = size;
+  var x = c.getContext("2d");
+  x.scale(size / 512, size / 512);
+  x.fillStyle = "#17212B";
+  x.fillRect(0, 0, 512, 512);
+  x.fillStyle = "#F4B400";
+  rr(x, 112, 128, 288, 204, 52);
+  x.fill();
+  x.beginPath();
+  x.moveTo(168, 318); x.lineTo(168, 396); x.lineTo(254, 326);
+  x.closePath();
+  x.fill();
+  x.fillStyle = "#17212B";
+  [196, 256, 316].forEach(function (cx) {
+    x.beginPath(); x.arc(cx, 230, 20, 0, Math.PI * 2); x.fill();
+  });
+  return c.toDataURL("image/png");
+}
+var a = document.getElementById("a192");
+a.href = draw(192); a.download = "icon-192.png";
+var b = document.getElementById("a512");
+b.href = draw(512); b.download = "icon-512.png";
+document.getElementById("prev").src = draw(192);
+</script>
+</body>
+</html>
