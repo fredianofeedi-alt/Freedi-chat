@@ -1,0 +1,16 @@
+{
+  "name": "Freedi Chat",
+  "short_name": "Freedi Chat",
+  "description": "Discutez avec vos proches et vos clients, en temps réel.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#17212B",
+  "theme_color": "#17212B",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
