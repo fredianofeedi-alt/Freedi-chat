@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#17212B">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>Freedi Chat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -137,6 +140,7 @@ button{cursor:pointer}
       <button class="btn" id="authSubmit">Se connecter</button>
       <button type="button" class="link" id="resetBtn">Mot de passe oublié ?</button>
       <button type="button" class="link" id="switchMode">Pas encore de compte ? Créer un compte</button>
+      <button type="button" class="btn install-btn" hidden>Installer l'application</button>
     </form>
   </section>
 </div>
@@ -148,6 +152,7 @@ button{cursor:pointer}
       <button class="ghost" id="logout">Se déconnecter</button>
     </header>
     <div class="search"><input id="search" type="search" placeholder="Rechercher un contact" aria-label="Rechercher un contact"></div>
+    <button type="button" class="link install-btn" hidden style="margin:6px 12px;text-align:left">Installer l'application sur ce téléphone</button>
     <ul id="list" class="list"></ul>
   </aside>
   <main class="chat">
@@ -426,6 +431,19 @@ $("#composer").addEventListener("submit", async e => {
     toast(friendlyError(err));
   }
 });
+
+/* ---------- Installation sur le téléphone ---------- */
+let installEvent = null;
+const showInstall = on => document.querySelectorAll(".install-btn").forEach(b => { b.hidden = !on; });
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvent = e; showInstall(true); });
+window.addEventListener("appinstalled", () => { installEvent = null; showInstall(false); });
+document.querySelectorAll(".install-btn").forEach(b => b.addEventListener("click", async () => {
+  if (!installEvent) return;
+  installEvent.prompt();
+  await installEvent.userChoice;
+  installEvent = null; showInstall(false);
+}));
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
 setMode("login");
 </script>
