@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17212B">
+<title>Freedi Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#17212B; --ink-2:#233140; --gold:#F4B400; --gold-soft:#FCEBB0;
+  --lagoon:#0E6B63; --mist:#ECEFEE; --paper:#FFFFFF; --line:#D9DFDD;
+  --muted:#5A6771; --danger:#B3261E;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{font-family:var(--body);font-size:16px;line-height:1.45;color:var(--ink);background:var(--mist);-webkit-text-size-adjust:100%}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* Chargement */
+.boot{height:100dvh;display:grid;place-items:center;background:var(--ink);color:var(--gold);font-family:var(--display);font-size:1.6rem;font-weight:800}
+
+/* Connexion */
+.auth{min-height:100dvh;display:grid;grid-template-rows:auto 1fr;background:var(--ink)}
+.hero{padding:calc(28px + env(safe-area-inset-top,0px)) 24px 28px;color:#fff}
+.wordmark{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,9vw,3.4rem);line-height:1;color:var(--gold);letter-spacing:-.02em}
+.tagline{margin:10px 0 20px;max-width:34ch;color:#D6DEE3}
+.demo{display:flex;flex-direction:column;gap:8px;max-width:300px}
+.demo .b{margin:0;padding:9px 13px;border-radius:16px;font-size:.95rem}
+.demo .in{background:#fff;color:var(--ink);border-bottom-left-radius:4px;align-self:flex-start}
+.demo .out{background:var(--gold);color:var(--ink);border-bottom-right-radius:4px;align-self:flex-end}
+.panel{background:var(--paper);border-radius:22px 22px 0 0;padding:26px 24px calc(28px + env(safe-area-inset-bottom,0px))}
+.panel form{max-width:380px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.panel h2{margin:0;font-family:var(--display);font-size:1.5rem}
+.field{display:flex;flex-direction:column;gap:5px;font-weight:500;font-size:.92rem}
+.field input{padding:12px 13px;border:1.5px solid var(--line);border-radius:10px;background:#fff;font-size:1rem}
+.field input:focus{border-color:var(--lagoon);outline:none;box-shadow:0 0 0 3px rgba(14,107,99,.18)}
+.btn{padding:13px 16px;border:0;border-radius:10px;background:var(--gold);color:var(--ink);font-weight:600;font-size:1rem}
+.btn:disabled{opacity:.6;cursor:wait}
+.link{background:none;border:0;padding:6px;color:var(--lagoon);font-weight:500;text-decoration:underline;text-underline-offset:3px}
+.error{margin:0;min-height:1.2em;color:var(--danger);font-size:.92rem}
+@media(min-width:820px){
+  .auth{grid-template-rows:none;grid-template-columns:1.1fr 1fr}
+  .hero{display:flex;flex-direction:column;justify-content:center;padding:48px 64px}
+  .panel{border-radius:0;display:grid;place-items:center}
+}
+
+/* Application */
+.app{height:100dvh;display:grid;grid-template-columns:340px 1fr;background:var(--paper)}
+.sidebar{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:var(--paper)}
+.side-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px;background:var(--ink);color:#fff}
+.side-head strong{display:block;font-family:var(--display);font-size:1.15rem}
+.side-head .sub{color:#B9C4CB;font-size:.82rem}
+.ghost{padding:7px 12px;border:1px solid #4A5966;border-radius:999px;background:transparent;color:#fff;font-size:.88rem}
+.search{padding:10px 12px;border-bottom:1px solid var(--line)}
+.search input{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--mist);font-size:.98rem}
+.list{list-style:none;margin:0;padding:0;overflow-y:auto;flex:1;min-height:0}
+.item{display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px;border:0;border-bottom:1px solid var(--mist);background:none;text-align:left}
+.item:hover{background:var(--mist)}
+.item.active{background:var(--gold-soft)}
+.item .name{font-weight:600}
+.item .hint{display:block;color:var(--muted);font-size:.85rem}
+.group-label{padding:12px 16px 6px;color:var(--muted);font-size:.85rem;font-weight:600}
+.avatar{flex:none;display:inline-grid;place-items:center;width:42px;height:42px;border-radius:50%;color:#fff;font-family:var(--display);font-weight:800;font-size:1.1rem}
+.avatar.gold{background:var(--gold);color:var(--ink)}
+
+.chat{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--mist)}
+.placeholder{flex:1;display:grid;place-items:center;padding:24px;text-align:center;color:var(--muted)}
+.chatbox{flex:1;display:flex;flex-direction:column;min-height:0}
+.chat-head{display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;background:var(--ink);color:#fff}
+.chat-head strong{display:block;font-family:var(--display)}
+.chat-head .sub{color:#B9C4CB;font-size:.82rem}
+.back{display:none;padding:6px 10px;border:0;background:transparent;color:#fff;font-size:1.4rem;line-height:1}
+.messages{flex:1;min-height:0;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:3px}
+.day{align-self:center;margin:10px 0 6px;padding:3px 12px;border-radius:999px;background:#fff;color:var(--muted);font-size:.8rem}
+.row{display:flex;flex-direction:column;max-width:82%}
+.row.me{align-self:flex-end;align-items:flex-end}
+.row.them{align-self:flex-start;align-items:flex-start}
+.row.first{margin-top:8px}
+.who{margin:0 6px 2px;color:var(--lagoon);font-size:.8rem;font-weight:600}
+.bubble{padding:8px 12px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere;text-align:left}
+.me .bubble{background:var(--gold);color:var(--ink);border-bottom-right-radius:4px}
+.them .bubble{background:#fff;border:1px solid var(--line);border-bottom-left-radius:4px}
+.time{margin:2px 6px 0;color:var(--muted);font-size:.74rem}
+.del{margin:4px 0 0;padding:4px 10px;border:1px solid var(--danger);border-radius:999px;background:#fff;color:var(--danger);font-size:.8rem}
+.empty{margin:auto;color:var(--muted);text-align:center;padding:24px}
+.composer{display:flex;align-items:flex-end;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));background:var(--paper);border-top:1px solid var(--line)}
+.composer textarea{flex:1;resize:none;max-height:120px;padding:10px 13px;border:1.5px solid var(--line);border-radius:18px;background:var(--mist);line-height:1.35}
+.composer textarea:focus{outline:none;border-color:var(--lagoon)}
+.send{padding:10px 16px;border:0;border-radius:18px;background:var(--gold);font-weight:600}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);max-width:90vw;padding:10px 16px;border-radius:10px;background:var(--ink);color:#fff;font-size:.92rem;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:760px){
+  .app{grid-template-columns:1fr}
+  .chat{display:none}
+  .app.chat-open .sidebar{display:none}
+  .app.chat-open .chat{display:flex}
+  .back{display:block}
+  .row{max-width:88%}
+}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+
+<div id="boot" class="boot">Freedi Chat</div>
+
+<div id="auth" class="auth" hidden>
+  <section class="hero">
+    <h1 class="wordmark">Freedi Chat</h1>
+    <p class="tagline">Discutez avec vos proches et vos clients, en temps réel.</p>
+    <div class="demo" aria-hidden="true">
+      <p class="b in">On se retrouve à 18 h ?</p>
+      <p class="b out">Oui, j'arrive.</p>
+      <p class="b out">Je prends la commande avec moi.</p>
+    </div>
+  </section>
+  <section class="panel">
+    <form id="authForm" novalidate>
+      <h2 id="authTitle">Connexion</h2>
+      <label class="field" id="nameField" hidden><span>Votre nom</span>
+        <input id="name" autocomplete="name" maxlength="40"></label>
+      <label class="field"><span>Email</span>
+        <input id="email" type="email" autocomplete="email" inputmode="email"></label>
+      <label class="field"><span>Mot de passe (6 caractères minimum)</span>
+        <input id="password" type="password" autocomplete="current-password"></label>
+      <p id="authError" class="error" role="alert"></p>
+      <button class="btn" id="authSubmit">Se connecter</button>
+      <button type="button" class="link" id="resetBtn">Mot de passe oublié ?</button>
+      <button type="button" class="link" id="switchMode">Pas encore de compte ? Créer un compte</button>
+    </form>
+  </section>
+</div>
+
+<div id="app" class="app" hidden>
+  <aside class="sidebar">
+    <header class="side-head">
+      <div><strong id="meName"></strong><span class="sub">Connecté</span></div>
+      <button class="ghost" id="logout">Se déconnecter</button>
+    </header>
+    <div class="search"><input id="search" type="search" placeholder="Rechercher un contact" aria-label="Rechercher un contact"></div>
+    <ul id="list" class="list"></ul>
+  </aside>
+  <main class="chat">
+    <div id="placeholder" class="placeholder"><p>Choisissez une conversation pour commencer.</p></div>
+    <div id="chatBox" class="chatbox" hidden>
+      <header class="chat-head">
+        <button class="back" id="back" aria-label="Retour à la liste">←</button>
+        <span id="headAvatar"></span>
+        <div><strong id="chatTitle"></strong><span class="sub" id="chatSub"></span></div>
+      </header>
+      <div id="messages" class="messages" aria-live="polite"></div>
+      <form id="composer" class="composer">
+        <textarea id="input" rows="1" maxlength="2000" placeholder="Écrire un message" aria-label="Message"></textarea>
+        <button class="send" type="submit">Envoyer</button>
+      </form>
+    </div>
+  </main>
+</div>
+
+<div id="toast" class="toast" role="status"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+         signOut, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, addDoc, deleteDoc, query, orderBy, limit,
+         onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ============ CONFIGURATION FIREBASE ============
+   Si la connexion échoue avec « clé invalide », recopiez ici
+   exactement le bloc firebaseConfig de votre console Firebase. */
+const firebaseConfig = {
+  apiKey: "AIzaSyCyM8zfAJflKSeIMFz9e9qCznB85_gZpTo",
+  authDomain: "messagerie-5acda.firebaseapp.com",
+  projectId: "messagerie-5acda",
+  storageBucket: "messagerie-5acda.firebasestorage.app",
+  messagingSenderId: "1034575215133",
+  appId: "1:1034575215133:web:b8f1e4794266f6646a4f4"
+};
+/* ================================================ */
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+const $ = s => document.querySelector(s);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const COLORS = ["#0E6B63", "#B85C38", "#5B4B8A", "#2E6F9E", "#8A6D1F", "#A23E5B"];
+const hash = s => [...(s || "?")].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+
+let mode = "login";           // "login" ou "signup"
+let users = [];               // contacts
+let active = null;            // conversation ouverte
+let unsubUsers = null, unsubMsgs = null;
+let toastTimer = null;
+
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 3500);
+}
+
+function friendlyError(err) {
+  const map = {
+    "auth/invalid-credential": "Email ou mot de passe incorrect.",
+    "auth/wrong-password": "Email ou mot de passe incorrect.",
+    "auth/user-not-found": "Email ou mot de passe incorrect.",
+    "auth/invalid-email": "Adresse email invalide.",
+    "auth/email-already-in-use": "Cet email a déjà un compte. Connectez-vous.",
+    "auth/weak-password": "Mot de passe trop court : 6 caractères minimum.",
+    "auth/network-request-failed": "Pas de connexion internet.",
+    "auth/too-many-requests": "Trop d'essais. Réessayez dans quelques minutes.",
+    "auth/operation-not-allowed": "La connexion par email n'est pas activée dans Firebase (Authentication > Méthode de connexion).",
+    "auth/invalid-api-key": "Clé Firebase invalide : recopiez la configuration dans le fichier.",
+    "permission-denied": "Accès refusé : vérifiez les règles Firestore."
+  };
+  return map[err.code] || map[(err.code || "").replace("firestore/", "")] || "Une erreur est survenue. Réessayez.";
+}
+
+/* ---------- Connexion / inscription ---------- */
+function setMode(m) {
+  mode = m;
+  const signup = m === "signup";
+  $("#authTitle").textContent = signup ? "Créer un compte" : "Connexion";
+  $("#authSubmit").textContent = signup ? "Créer mon compte" : "Se connecter";
+  $("#switchMode").textContent = signup ? "J'ai déjà un compte" : "Pas encore de compte ? Créer un compte";
+  $("#nameField").hidden = !signup;
+  $("#resetBtn").hidden = signup;
+  $("#password").autocomplete = signup ? "new-password" : "current-password";
+  $("#authError").textContent = "";
+}
+$("#switchMode").onclick = () => setMode(mode === "login" ? "signup" : "login");
+
+$("#authForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const email = $("#email").value.trim(), pass = $("#password").value, name = $("#name").value.trim();
+  const errBox = $("#authError"), btn = $("#authSubmit");
+  errBox.textContent = "";
+  if (!email || !pass) { errBox.textContent = "Entrez votre email et votre mot de passe."; return; }
+  if (mode === "signup" && name.length < 2) { errBox.textContent = "Entrez votre nom (2 lettres minimum)."; return; }
+  btn.disabled = true;
+  try {
+    if (mode === "signup") {
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(cred.user, { displayName: name });
+      await setDoc(doc(db, "users", cred.user.uid), { name, nameLower: name.toLowerCase() }, { merge: true });
+      $("#meName").textContent = name;
+    } else {
+      await signInWithEmailAndPassword(auth, email, pass);
+    }
+  } catch (err) {
+    errBox.textContent = friendlyError(err);
+  } finally { btn.disabled = false; }
+});
+
+$("#resetBtn").onclick = async () => {
+  const email = $("#email").value.trim();
+  if (!email) { $("#authError").textContent = "Entrez votre email, puis touchez « Mot de passe oublié »."; return; }
+  try { await sendPasswordResetEmail(auth, email); toast("Email de réinitialisation envoyé."); }
+  catch (err) { $("#authError").textContent = friendlyError(err); }
+};
+
+$("#logout").onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, async user => {
+  $("#boot").hidden = true;
+  if (unsubUsers) { unsubUsers(); unsubUsers = null; }
+  if (unsubMsgs) { unsubMsgs(); unsubMsgs = null; }
+  active = null;
+  if (!user) {
+    $("#app").hidden = true; $("#auth").hidden = false;
+    $(".app").classList.remove("chat-open");
+    return;
+  }
+  $("#auth").hidden = true; $("#app").hidden = false;
+  $("#chatBox").hidden = true; $("#placeholder").hidden = false;
+  $("#meName").textContent = user.displayName || user.email;
+  if (user.displayName) {
+    setDoc(doc(db, "users", user.uid), { name: user.displayName, nameLower: user.displayName.toLowerCase() }, { merge: true }).catch(() => {});
+  }
+  unsubUsers = onSnapshot(query(collection(db, "users"), orderBy("nameLower")),
+    snap => { users = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(u => u.id !== user.uid); renderList(); },
+    err => toast(friendlyError(err)));
+  renderList();
+});
+
+/* ---------- Liste des conversations ---------- */
+function avatar(name, gold) {
+  const a = el("span", "avatar" + (gold ? " gold" : ""), (name || "?").trim().charAt(0).toUpperCase());
+  if (!gold) a.style.background = COLORS[hash(name) % COLORS.length];
+  return a;
+}
+
+function renderList() {
+  const list = $("#list"), q = $("#search").value.trim().toLowerCase();
+  list.replaceChildren();
+  const add = (chatId, title, hint, gold, isGroup) => {
+    const li = el("li");
+    const b = el("button", "item" + (active && active.id === chatId ? " active" : ""));
+    b.type = "button";
+    const txt = el("span");
+    txt.append(el("span", "name", title), el("span", "hint", hint));
+    b.append(avatar(title, gold), txt);
+    b.onclick = () => openChat(chatId, title, isGroup);
+    li.append(b); list.append(li);
+  };
+  if (!q || "salon général".includes(q)) add("general", "Salon général", "Discussion ouverte à tous", true, true);
+  const found = users.filter(u => !q || (u.nameLower || "").includes(q));
+  if (found.length) list.append(el("li", "group-label", "Contacts"));
+  found.forEach(u => {
+    const me = auth.currentUser.uid;
+    add([me, u.id].sort().join("_"), u.name, "Message privé", false, false);
+  });
+  if (!found.length && !users.length) {
+    list.append(el("li", "group-label", "Aucun autre contact pour le moment. Invitez quelqu'un à créer un compte."));
+  } else if (!found.length && q) {
+    list.append(el("li", "group-label", "Aucun contact trouvé."));
+  }
+}
+$("#search").addEventListener("input", renderList);
+
+/* ---------- Conversation ---------- */
+function openChat(chatId, title, isGroup) {
+  if (unsubMsgs) unsubMsgs();
+  active = { id: chatId, title, isGroup };
+  $("#placeholder").hidden = true; $("#chatBox").hidden = false;
+  $(".app").classList.add("chat-open");
+  $("#chatTitle").textContent = title;
+  $("#chatSub").textContent = isGroup ? "Tout le monde peut écrire ici" : "Conversation privée";
+  $("#headAvatar").replaceChildren(avatar(title, isGroup));
+  $("#messages").replaceChildren(el("p", "empty", "Chargement…"));
+  renderList();
+  const q = query(collection(db, "chats", chatId, "messages"), orderBy("createdAt", "desc"), limit(100));
+  unsubMsgs = onSnapshot(q,
+    snap => renderMessages(snap.docs.map(d => ({ id: d.id, ...d.data() })).reverse()),
+    err => { $("#messages").replaceChildren(el("p", "empty", "Impossible de charger les messages.")); toast(friendlyError(err)); });
+  if (matchMedia("(pointer:fine)").matches) $("#input").focus();
+}
+$("#back").onclick = () => {
+  $(".app").classList.remove("chat-open");
+  if (unsubMsgs) { unsubMsgs(); unsubMsgs = null; }
+  active = null; $("#chatBox").hidden = true; $("#placeholder").hidden = false; renderList();
+};
+
+function dayLabel(d) {
+  const today = new Date(), yest = new Date(Date.now() - 864e5);
+  const same = (a, b) => a.toDateString() === b.toDateString();
+  if (same(d, today)) return "Aujourd'hui";
+  if (same(d, yest)) return "Hier";
+  return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+}
+
+function renderMessages(msgs) {
+  const box = $("#messages");
+  const nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 140;
+  box.replaceChildren();
+  if (!msgs.length) {
+    box.append(el("p", "empty", "Aucun message pour l'instant. Écrivez le premier."));
+    return;
+  }
+  const me = auth.currentUser.uid;
+  let lastDay = "", lastSender = null;
+  msgs.forEach(m => {
+    const date = m.createdAt && m.createdAt.toDate ? m.createdAt.toDate() : new Date();
+    const dl = dayLabel(date);
+    if (dl !== lastDay) { box.append(el("span", "day", dl)); lastDay = dl; lastSender = null; }
+    const mine = m.senderId === me;
+    const row = el("div", "row " + (mine ? "me" : "them") + (m.senderId !== lastSender ? " first" : ""));
+    if (!mine && active.isGroup && m.senderId !== lastSender) row.append(el("span", "who", m.senderName || "Membre"));
+    const bubble = el("div", "bubble", m.text);
+    row.append(bubble, el("span", "time", date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })));
+    if (mine) {
+      bubble.style.cursor = "pointer";
+      bubble.onclick = () => {
+        const old = row.querySelector(".del");
+        if (old) { old.remove(); return; }
+        const d = el("button", "del", "Supprimer");
+        d.type = "button";
+        d.onclick = async () => {
+          try { await deleteDoc(doc(db, "chats", active.id, "messages", m.id)); }
+          catch (err) { toast(friendlyError(err)); }
+        };
+        row.append(d);
+      };
+    }
+    box.append(row);
+    lastSender = m.senderId;
+  });
+  if (nearBottom || !box.dataset.ready) box.scrollTop = box.scrollHeight;
+  box.dataset.ready = "1";
+}
+
+/* ---------- Envoi ---------- */
+const input = $("#input");
+const autosize = () => { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 120) + "px"; };
+input.addEventListener("input", autosize);
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey && matchMedia("(pointer:fine)").matches) { e.preventDefault(); $("#composer").requestSubmit(); }
+});
+$("#composer").addEventListener("submit", async e => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text || !active) return;
+  input.value = ""; autosize();
+  try {
+    await addDoc(collection(db, "chats", active.id, "messages"), {
+      text,
+      senderId: auth.currentUser.uid,
+      senderName: auth.currentUser.displayName || "Membre",
+      createdAt: serverTimestamp()
+    });
+    const box = $("#messages"); box.scrollTop = box.scrollHeight;
+  } catch (err) {
+    input.value = text; autosize();
+    toast(friendlyError(err));
+  }
+});
+
+setMode("login");
+</script>
+</body>
+</html>
